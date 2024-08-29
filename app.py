@@ -18,6 +18,9 @@ db = firestore.Client()
 storage_client = storage.Client()
 vision_client = vision.ImageAnnotatorClient()
 
+# Dohvaćanje API ključa iz varijable
+api_key = os.getenv('DOG_API_KEY')
+
 # Funkcija za provjeru dopuštenih ekstenzija datoteka
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in {'png', 'jpg', 'jpeg', 'gif'}
@@ -163,7 +166,7 @@ def upload():
             for breed_name in possible_breeds:
                 # Koristi The Dog API za dobivanje informacija o pasmini
                 api_url = f'https://api.thedogapi.com/v1/breeds/search?q={breed_name}'
-                headers = {'x-api-key': 'live_PchmdGac1vmVg7iCzOzj91mJD6J4nYNIXZswBnfE0GSvvisUvBbjwKCDqPTVfOQi'}
+                headers = {'x-api-key': api_key}
                 response = requests.get(api_url, headers=headers)
                 
                 # Log za odgovor The Dog API-ja
