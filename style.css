@@ -1,0 +1,155 @@
+/* Reset some basic elements */
+body, html {
+    height: 100%;
+    margin: 0;
+    font-family: Arial, sans-serif;
+}
+
+/* Background image */
+#background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #faf4e7;
+    background-size: cover;
+    background-position: center;
+}
+
+/* Form containers */
+#loginDiv, #uploadDiv {
+    position: relative;
+    max-width: 250px; /* Base style for small screens */
+    margin: 20px auto;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.8);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    border-radius: 10px;
+    text-align: center;
+}
+
+/* Form headings */
+#loginDiv > h2, #uploadDiv > h2 {
+    margin-bottom: 20px;
+    font-weight: bold;
+    color: #333;
+}
+
+/* Form inputs */
+#loginDiv input[type="email"],
+#loginDiv input[type="password"],
+#uploadDiv input[type="file"] {
+    width: 80%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+/* Form input focus */
+#loginDiv input[type="email"]:focus,
+#loginDiv input[type="password"]:focus,
+#uploadDiv input[type="file"]:focus {
+    border-color: #7e7e7e;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+}
+
+/* Buttons */
+#loginDiv button,
+#uploadDiv button,
+#logoutButton {
+    width: 40%;
+    margin: 20px;
+    padding: 10px;
+    background: #2460a0;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease; /* Transition on hover */
+}
+
+/* Button hover state */
+#loginDiv button:hover,
+#uploadDiv button:hover,
+#logoutButton:hover {
+    background: #4f92da;
+}
+
+/* Button active state */
+#loginDiv button:active,
+#uploadDiv button:active,
+#logoutButton:active {
+    background: #0047a3;
+}
+
+/* Logout button specific styles */
+#logoutButton {
+    margin-top: 20px; /* Dodajte razmak iznad gumba za odjavu */
+    align-self: flex-end; /* Postavite gumb za odjavu na kraj unutar #images */
+    padding: 10px 20px;
+    font-size: 12px;
+    background-color: #2460a0;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+/* Image upload container */
+#uploadDiv {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* Image grid container */
+#images {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 5px;
+    width: 100%;
+}
+
+/* Image item */
+.image-item {
+    background-color: #fff;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    text-align: center;
+}
+
+.image-item img {
+    max-width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 5px;
+}
+
+/* Upload date and breed info */
+.upload-date, .breed-info {
+    margin: 10px 0;
+    font-size:x-small;
+}
+
+/* Breed information */
+.breed-info strong {
+    font-size: 1.2em;
+}
+
+/* Media queries for larger screens */
+@media (min-width: 480px) {
+    #loginDiv, #uploadDiv {
+        max-width: 250px;
+        margin: 20px auto;
+    }
+}
+
+@media (min-width: 768px) {
+    #loginDiv, #uploadDiv {
+        max-width: 650px;
+        margin: 50px auto;
+    }
+}

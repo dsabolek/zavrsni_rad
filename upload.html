@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload slike</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div id="background"></div>
+    <div id="uploadDiv">
+        <h2>Molimo unesite sliku o kojoj želite saznati više!</h2>
+        <form id="uploadForm" enctype="multipart/form-data">
+            <input type="file" name="file" id="fileInput">
+            <button type="submit" id="uploadBtn">Potvrda slike</button>
+        </form>
+        <div id="breed-info"></div> <!-- Informacije o pasmini -->
+        <div id="images" class="image-grid"></div> <!-- Ovdje se ispisuju slike i informacije o njima -->
+        <div id="message"></div> <!-- Poruka o uspješnom uploadu -->
+        <div id="error-message"></div> <!-- Poruka o grešci prilikom uploada -->
+        <!-- Logout gumb na kraju kontejnera za slike -->
+        <button id="logoutButton">Odjava</button>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const uploadBtn = document.getElementById('uploadBtn');
+            const logoutBtn = document.getElementById('logoutButton'); 
+
+            if (uploadBtn) {
+                loadImages();
+            }
+
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', logoutUser);
+            }
+        });
+
+        function loadImages() {
+    fetch('/user_images')
+        .then(response => response.json())
+        .then(data => {
+            const imagesDiv = document.getElementById('images');
+            imagesDiv.innerHTML = '';
+            data.forEach(image => {
+                const imgContainer = document.createElement('div');
+                imgContainer.classList.add('image-item');
+                const img = document.createElement('img');
+                img.src = image.public_url;
+                img.style.width = '100%';
+                img.style.height = '200px';
+                imgContainer.appendChild(img);
+                imgContainer.appendChild(document.createElement('br'));
+
+                let uploadDateString = 'Nepoznato';
+                if (image.upload_date && image.upload_date.seconds) {
+                    const uploadDate = new Date(image.upload_date.seconds * 1000);
+                    uploadDateString = uploadDate.toLocaleString();
+                }
+
+                const dateDiv = document.createElement('div');
+                dateDiv.classList.add('upload-date');
+                dateDiv.innerText = `Preneseno: ${uploadDateString}`;
+                imgContainer.appendChild(dateDiv);
+
+                if (image.breed_info) {
+                    const breedInfoDiv = document.createElement('div');
+                    breedInfoDiv.classList.add('breed-info');
+                    const breedName = image.breed_info.name || 'Nepoznata pasmina';
+                    const lifeSpan = image.breed_info.life_span || 'N/A';
+                    const temperament = image.breed_info.temperament || 'N/A';
+                    
+                    // Provjera postojanja `weight` i `metric`
+                    const weightMetric = image.breed_info.weight && image.breed_info.weight.metric 
+                        ? image.breed_info.weight.metric 
+                        : 'N/A';
+
+                    breedInfoDiv.innerHTML = `
+                        <strong>Pasmina:</strong> ${breedName}<br>
+                        <strong>Životni vijek:</strong> ${lifeSpan}<br>
+                        <strong>Temperament:</strong> ${temperament}<br>
+                        <strong>Težina:</strong> ${weightMetric} kg<br>
+                    `;
+                    imgContainer.appendChild(breedInfoDiv);
+                }
+
+                imagesDiv.appendChild(imgContainer);
+            });
+        })
+        .catch(error => console.error('Error prilikom učitavanja slike:', error));
+    }
+
+        document.getElementById('uploadForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const fileInput = document.getElementById('fileInput');
+            const file = fileInput.files[0];
+            if (file) {
+                const formData = new FormData();
+                formData.append('file', file);
+                fetch('/upload', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Response data:', data); // Log response data for debugging
+                    if (data.error) {
+                        alert(data.error); // Prikazuje alert sa porukom o grešci
+                    } else {
+                        if (data.breed_info && data.breed_info != 'N/A') {
+                            const breedInfoDiv = document.getElementById('breed-info');
+                            breedInfoDiv.innerHTML = `
+                                <img src="${data.public_url}" style="width: 250px; height: 300px;"><br>
+                                <strong>Informacije o pasmini:</strong><br>
+                                <strong>Pasmina:</strong> ${data.breed_info.name || 'Nepoznata pasmina'}<br>
+                                <strong>Životni vijek:</strong> ${data.breed_info.life_span || 'N/A'}<br>
+                                <strong>Temperament:</strong> ${data.breed_info.temperament || 'N/A'}<br>
+                                <strong>Težina:</strong> ${data.breed_info.weight.metric || 'N/A'} kg<br>
+                            `;
+                        } else {
+                            document.getElementById('message').innerText = data.message;
+                        }
+                        loadImages(); // Ponovno učitavanje slika nakon obrade
+                    }
+                })
+                .catch(error => console.error('Error prilikom učitavanja slike:', error));
+            } else {
+                document.getElementById('error-message').innerText = 'Molimo odaberite sliku';
+            }
+        });
+
+        function logoutUser() {
+            fetch('/logout', {
+                method: 'POST'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Uspješno ste se odjavili.');
+                    window.location.href = '/login'; // Preusmjeri na stranicu za prijavu
+                } else {
+                    alert('Error prilikom odjave.');
+                }
+            })
+            .catch(error => console.error('Error tijekom odjave:', error));
+        }
+    </script>
+</body>
+</html>
